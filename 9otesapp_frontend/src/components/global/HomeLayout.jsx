@@ -6,7 +6,7 @@ export default function HomeLayout() {
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-200">
             <Navbar/>
-            <div className="flex flex-grow items-center justify-center px-6 py-12">
+            <div className="flex flex-grow items-center justify-center px-6 py-12 mt-12">
                 < Outlet/>
             </div>
             <Footer/>

@@ -1,10 +1,11 @@
 import { Book, Lightbulb, Users, Clock, Globe } from "lucide-react"
+import {Link} from "react-router-dom";
 
 export default function Home_Register() {
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-200">
             {/* Hero Section with Registration */}
-            <section className="relative py-20 px-6">
+            <section className="relative py-12 px-6">
                 <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
                     {/* Left Side - Creative Box */}
                     <div className="relative p-8">
@@ -73,9 +74,9 @@ export default function Home_Register() {
                         </form>
                         <p className="mt-4 text-center text-gray-600">
                             Already have an account?{" "}
-                            <a href="/login" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                            <Link to="/signin" className="text-indigo-600 hover:text-indigo-800 font-medium">
                                 Sign in
-                            </a>
+                            </Link>
                         </p>
                     </div>
                 </div>

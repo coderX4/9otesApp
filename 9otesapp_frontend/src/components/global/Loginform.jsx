@@ -2,7 +2,7 @@ import React from 'react';
 import google from '../../assets/google.svg'
 export default function LoginForm() {
     return (
-        <div className="bg-white p-8 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden backdrop-blur-lg">
+        <div className="mt-11 bg-white p-7 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden backdrop-blur-lg">
             <div className="absolute inset-0 opacity-10">
                 <img
                     src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
@@ -11,7 +11,7 @@ export default function LoginForm() {
                 />
             </div>
             <div className="relative z-10">
-                <h1 className="text-3xl font-bold mb-6 text-indigo-800 text-center">Welcome Back!</h1>
+                <h1 className="text-3xl font-bold mb-6 text-indigo-800 text-center">Sign in</h1>
                 <form className="space-y-4">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -39,7 +39,7 @@ export default function LoginForm() {
                         type="submit"
                         className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
                     >
-                        Sign In
+                        Login
                     </button>
                 </form>
                 <div className="mt-6 text-center">
