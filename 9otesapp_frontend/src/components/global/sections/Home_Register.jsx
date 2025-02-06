@@ -1,5 +1,6 @@
 import { Book, Lightbulb, Users, Clock, Globe } from "lucide-react"
 import {Link} from "react-router-dom";
+import RegistrationForm from "./RegistrationForm.jsx"
 
 export default function Home_Register() {
     return (
@@ -31,47 +32,7 @@ export default function Home_Register() {
                     {/* Right Side - Registration Form */}
                     <div className="bg-white p-8 rounded-3xl shadow-2xl backdrop-blur-lg">
                         <h2 className="text-3xl font-bold text-indigo-800 mb-6 text-center">Create Your Account</h2>
-                        <form className="space-y-4">
-                            <div>
-                                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Username
-                                </label>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    placeholder="Enter your username"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Email
-                                </label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Password
-                                </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    placeholder="Create a password"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                                />
-                            </div>
-                            <button
-                                type="submit"
-                                className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
-                            >
-                                Register
-                            </button>
-                        </form>
+                        <RegistrationForm />
                         <p className="mt-4 text-center text-gray-600">
                             Already have an account?{" "}
                             <Link to="/signin" className="text-indigo-600 hover:text-indigo-800 font-medium">
