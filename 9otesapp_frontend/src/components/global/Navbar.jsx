@@ -21,7 +21,7 @@ export default function Navbar() {
 
     // Navbar Links Array
     const navLinks = [
-        { name: "Home", path: "/home" },
+        { name: "Home", path: "" },
         { name: "About", path: "/aboutus" },
         { name: "Contact Us", path: "/contactus" },
     ];
