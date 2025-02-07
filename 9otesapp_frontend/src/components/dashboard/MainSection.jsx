@@ -1,4 +1,7 @@
+import UserComp from "./UserComp.jsx";
+
 export default function MainSection() {
+
     return (
         <main className="flex-1 p-8 bg-white bg-opacity-60 backdrop-blur-lg shadow-lg rounded-l-2xl">
             <div className="max-w-7xl mx-auto">
@@ -14,6 +17,7 @@ export default function MainSection() {
                         </div>
                     ))}
                 </div>
+                <UserComp/>
             </div>
         </main>
     );

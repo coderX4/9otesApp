@@ -4,6 +4,8 @@ import './index.css';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { HomeLayout, LoginForm, Home_Register, Aboutus, Contact } from './components/global/globalindex.js';
 import { DashboardLayout ,MainSection,Subject} from './components/dashboard/dashboardindex.js';
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import {AuthProvider} from "./components/AuthContext.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -15,7 +17,7 @@ const router = createBrowserRouter(
                 <Route path="signin" element={<LoginForm />} />
             </Route>
 
-            <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                 <Route index element={<MainSection />} />
                 <Route path="subject" element={<Subject />} />
             </Route>
@@ -25,6 +27,8 @@ const router = createBrowserRouter(
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <RouterProvider router={router} />
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
     </StrictMode>
 );
