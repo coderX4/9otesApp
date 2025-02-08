@@ -6,6 +6,7 @@ import { HomeLayout, LoginForm, Home_Register, Aboutus, Contact } from './compon
 import { DashboardLayout ,MainSection,Subject} from './components/dashboard/dashboardindex.js';
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {AuthProvider} from "./components/AuthContext.jsx";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -25,10 +26,14 @@ const router = createBrowserRouter(
     )
 );
 
+const CLIENT_ID = "188443488642-k7pq7vuv75gek784k312qq92venb1a56.apps.googleusercontent.com"
+
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <AuthProvider>
-            <RouterProvider router={router} />
+            <GoogleOAuthProvider clientId={CLIENT_ID}>
+                <RouterProvider router={router} />
+            </GoogleOAuthProvider>
         </AuthProvider>
     </StrictMode>
 );
