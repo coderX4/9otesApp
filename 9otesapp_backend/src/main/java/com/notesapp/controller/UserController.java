@@ -1,7 +1,8 @@
 package com.notesapp.controller;
 
-import com.notesapp.entity.LoginRequest;
 import com.notesapp.entity.User;
+import com.notesapp.security.GoogleLoginRequest;
+import com.notesapp.security.LoginRequest;
 import com.notesapp.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,6 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         try {
             User authenticatedUser = userService.authenticated(loginRequest.getEmail(), loginRequest.getPassword());
-
             if (authenticatedUser != null) {
                 session.setAttribute("user", loginRequest); // Store user in session
                 return ResponseEntity.ok(loginRequest); // Send user details to client
@@ -44,5 +44,44 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\": \"An Unexpected error occurred\"}");
         }
     }
+
+    @PostMapping("/google-login")
+    public ResponseEntity<?> getOAuthUser(@RequestBody GoogleLoginRequest googleLoginRequest, HttpSession session) {
+        try {
+            boolean isPresent = userService.FindGoogleUserByEmail(googleLoginRequest.getEmail());
+            System.out.println("User Exists: " + isPresent); // Debugging log
+
+            LoginRequest loginRequest = new LoginRequest();
+
+            if (isPresent) {
+                User user = userService.FindUserByEmail(googleLoginRequest.getEmail());
+                loginRequest.setEmail(user.getEmail());
+                loginRequest.setPassword("GOOGLE_AUTH");
+                session.setAttribute("user", loginRequest);
+                return ResponseEntity.ok(loginRequest);
+            }
+            else {
+
+                User newuser = new User();
+                // If ID is auto-generated in the database, remove this line
+                newuser.setUname(googleLoginRequest.getUname());
+                newuser.setEmail(googleLoginRequest.getEmail());
+                newuser.setPassword("GOOGLE_AUTH"); // Use placeholder for OAuth
+
+                userService.saveUser(newuser); // Save new user
+
+                loginRequest.setEmail(newuser.getEmail());
+                loginRequest.setPassword("GOOGLE_AUTH");
+
+                session.setAttribute("user", loginRequest);
+                return ResponseEntity.ok(loginRequest);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Log error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"An Unexpected error occurred\"}");
+        }
+    }
+
 
 }

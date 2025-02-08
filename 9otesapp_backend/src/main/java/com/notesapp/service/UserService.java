@@ -8,4 +8,8 @@ public interface UserService {
     User saveUser(User user);
     List<User> getAllUsers();
     User authenticated(String username, String password);
+
+    User FindUserByEmail(String email);
+
+    boolean FindGoogleUserByEmail(String email);
 }

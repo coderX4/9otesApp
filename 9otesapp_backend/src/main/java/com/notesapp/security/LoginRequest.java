@@ -1,11 +1,8 @@
-package com.notesapp.entity;
+package com.notesapp.security;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
-@Entity
 public class LoginRequest {
-    @Id
+
     private String email;
 
     private String password;

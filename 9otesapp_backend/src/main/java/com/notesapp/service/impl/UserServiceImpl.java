@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -45,4 +46,17 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+
+    @Override
+    public User FindUserByEmail(String email) {
+        return userRepo.findByEmail(email);
+    }
+
+    @Override
+    public boolean FindGoogleUserByEmail(String username) {
+        return Optional.ofNullable(userRepo.findByEmail(username))
+                .map(user -> user.getEmail().equals(username))
+                .orElse(false);
+    }
+
 }
