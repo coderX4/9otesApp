@@ -4,6 +4,8 @@ import {useAuth} from "../AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
 
 export default function Header() {
+    const storedUser = sessionStorage.getItem("user");
+    const { uname } = JSON.parse(storedUser);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -36,7 +38,7 @@ export default function Header() {
                     <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shadow-lg">
                         <UserCircle className="w-6 h-6" />
                     </div>
-                    <span className="font-medium">UserName</span>
+                    <span className="font-medium">{uname}</span>
                     <ChevronDown className="w-4 h-4" />
                 </button>
 
