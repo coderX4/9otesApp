@@ -52,7 +52,6 @@ export default function LoginForm() {
                 email: decoded.email,
                 uname: decoded.name,
             };
-            console.log(googleUser);
 
             // Optional: Send to backend for verification
             const response = await fetch('http://localhost:8082/api/user/google-login', {
