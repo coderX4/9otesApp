@@ -3,9 +3,9 @@ package com.notesapp.controller;
 import com.notesapp.entity.User;
 import com.notesapp.security.GoogleLoginRequest;
 import com.notesapp.security.LoginRequest;
+import com.notesapp.security.UserSession;
 import com.notesapp.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping({"/api/user"})
 public class UserController {
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping({"/adduser"})
     public ResponseEntity<User> addUser(@RequestBody User user) {
@@ -35,8 +39,10 @@ public class UserController {
         try {
             User authenticatedUser = userService.authenticated(loginRequest.getEmail(), loginRequest.getPassword());
             if (authenticatedUser != null) {
-                session.setAttribute("user", loginRequest); // Store user in session
-                return ResponseEntity.ok(loginRequest); // Send user details to client
+                UserSession userSession = new UserSession(authenticatedUser.getId(), authenticatedUser.getUname(), loginRequest.getEmail(), loginRequest.getPassword());
+
+                session.setAttribute("user", userSession); // Store user in session
+                return ResponseEntity.ok(userSession); // Send user details to client
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("{\"error\": \"Invalid email or password\"}");
             }
@@ -51,14 +57,11 @@ public class UserController {
             boolean isPresent = userService.FindGoogleUserByEmail(googleLoginRequest.getEmail());
             System.out.println("User Exists: " + isPresent); // Debugging log
 
-            LoginRequest loginRequest = new LoginRequest();
-
             if (isPresent) {
                 User user = userService.FindUserByEmail(googleLoginRequest.getEmail());
-                loginRequest.setEmail(user.getEmail());
-                loginRequest.setPassword("GOOGLE_AUTH");
-                session.setAttribute("user", loginRequest);
-                return ResponseEntity.ok(loginRequest);
+                UserSession userSession = new UserSession(user.getId(), user.getUname(), user.getEmail(), "GOOGLE_AUTH");
+                session.setAttribute("user", userSession);
+                return ResponseEntity.ok(userSession);
             }
             else {
 
@@ -70,11 +73,10 @@ public class UserController {
 
                 userService.saveUser(newuser); // Save new user
 
-                loginRequest.setEmail(newuser.getEmail());
-                loginRequest.setPassword("GOOGLE_AUTH");
+                UserSession userSession = new UserSession(newuser.getId(), newuser.getUname(), newuser.getEmail(), "GOOGLE_AUTH");
 
-                session.setAttribute("user", loginRequest);
-                return ResponseEntity.ok(loginRequest);
+                session.setAttribute("user", userSession);
+                return ResponseEntity.ok(userSession);
             }
         } catch (Exception e) {
             e.printStackTrace(); // Log error
