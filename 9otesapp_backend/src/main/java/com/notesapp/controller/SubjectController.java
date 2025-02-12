@@ -44,6 +44,12 @@ public class SubjectController {
         return ResponseEntity.ok(subject);  // Return the deleted subject
     }
 
-
+    @PutMapping({"/updatesub/{subid}"})
+    public ResponseEntity<?> updateSubject(@PathVariable("subid") int subid, @RequestParam("subname") String updatedsubname ) {
+        Subject subject = subjectRepo.findById(subid);
+        subject.setSubname(updatedsubname);
+        subjectRepo.save(subject);
+        return ResponseEntity.ok(subject);
+    }
 
 }
