@@ -1,66 +1,105 @@
-import { Plus, Share2, Trash2, ArrowRight } from "lucide-react"
-import { Link } from "react-router-dom"
-import { useEffect, useState } from "react"
-import fetchInstance from "../FetchInstance.js"
+import { Plus, Trash2, ArrowRight, Pencil } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import fetchInstance from "../FetchInstance.js";
+import Swal from "sweetalert2";
 
 export default function Sidebar() {
-    const [showInput, setShowInput] = useState(false)
-    const [newSubjectName, setNewSubjectName] = useState("")
-    const [subjects, setSubjects] = useState([])
+    const [showInput, setShowInput] = useState(false);
+    const [newSubjectName, setNewSubjectName] = useState("");
+    const [subjects, setSubjects] = useState([]);
+    const [updateName, setUpdateName] = useState("");
+    const [editingSubjectId, setEditingSubjectId] = useState(null); // Track the subject being edited
 
-    const storedUser = sessionStorage.getItem("user")
+    const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
-        console.error("User not found in sessionStorage.")
-        return null
+        console.error("User not found in sessionStorage.");
+        return null;
     }
 
-    const { id } = JSON.parse(storedUser)
+    const { id } = JSON.parse(storedUser);
 
     const fetchSubjects = async () => {
         try {
             const data = await fetchInstance(`http://localhost:8082/api/${id}/getallsubjects`, {
                 method: "GET",
-            })
-            setSubjects(data)
+            });
+            setSubjects(data);
         } catch (err) {
-            console.error("Error fetching subjects:", err)
+            console.error("Error fetching subjects:", err);
         }
-    }
+    };
 
     const addSubject = async () => {
-        if (!newSubjectName.trim()) return
-
-        try {
-            await fetchInstance(`http://localhost:8082/api/${id}/addsubject`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ subname: newSubjectName }),
-            })
-            setNewSubjectName("")
-            setShowInput(false)
+        if (!newSubjectName.trim()) {
+            setShowInput(false);
             fetchSubjects();
-        } catch (err) {
-            console.error("Error adding subject:", err)
+            return;
+        } else {
+            try {
+                await fetchInstance(`http://localhost:8082/api/${id}/addsubject`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ subname: newSubjectName }),
+                });
+                setNewSubjectName("");
+                setShowInput(false);
+                fetchSubjects();
+            } catch (err) {
+                console.error("Error adding subject:", err);
+            }
         }
-    }
+    };
 
-    // Delete employee by ID
-    const deleteSubject = async (subid) => {
+    const updateSubject = async (subid) => {
+        if (!updateName.trim()) return;
         try {
-            await fetchInstance(`http://localhost:8082/api/${id}/deletesub/${subid}`, {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
+            await fetchInstance(`http://localhost:8082/api/${id}/updatesub/${subid}?subname=${updateName}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"},
             })
+                .then(() => setEditingSubjectId(null))
+                .then(() => setUpdateName(""))
+                .then(() => fetchSubjects())
 
-        } catch (err) {
-            console.error("Error deleting employee:", err);
+        } catch (error) {
+            console.error("Error updating subject:", error);
         }
-    }
+    };
+
+    const deleteSubject = async (subid) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await fetchInstance(`http://localhost:8082/api/${id}/deletesub/${subid}`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                    });
+
+                    Swal.fire("Deleted!", "The subject has been removed.", "success");
+                    fetchSubjects();
+                } catch (err) {
+                    console.error("Error deleting subject:", err);
+                    Swal.fire("Error!", "Failed to delete the subject.", "error");
+                }
+            }
+        });
+    };
+
 
     useEffect(() => {
         fetchSubjects();
     }, []);
-
 
     return (
         <aside className="w-64 bg-white bg-opacity-50 backdrop-blur-lg border-r border-indigo-200 shadow-lg rounded-r-2xl p-4 flex flex-col h-full">
@@ -90,10 +129,9 @@ export default function Sidebar() {
                                 onClick={addSubject}
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md flex items-center justify-center"
                             >
-                                <ArrowRight className="w-5 h-5"/>
+                                <ArrowRight className="w-5 h-5" />
                             </button>
                         </div>
-
                     )}
                 </div>
             </div>
@@ -103,21 +141,52 @@ export default function Sidebar() {
                     <ul className="space-y-3">
                         {subjects.map((subject) => (
                             <li key={subject.id}>
-                                <div className="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
-                                    <Link
-                                        to={`/dashboard/subject/${subject.id}`}>
-                                        <span
-                                            className="text-gray-800 font-medium truncate mr-2">{subject.subname}</span>
-                                    </Link>
-                                    <div className="flex space-x-1 flex-shrink-0">
-                                        <button className="text-indigo-600 hover:text-indigo-800 transition-all p-1">
-                                            <Share2 className="w-4 h-4" />
-                                        </button>
-                                        <button onClick={() => {deleteSubject(subject.id).then(() => fetchSubjects())}} className="text-red-500 hover:text-red-700 transition-all p-1">
-                                            <Trash2 className="w-4 h-4" />
+                                {editingSubjectId === subject.id ? (
+                                    // Show input field if the subject is being edited
+                                    <div className="relative w-full">
+                                        <input
+                                            type="text"
+                                            placeholder="New subject name"
+                                            value={updateName}
+                                            onChange={(e) => setUpdateName(e.target.value)}
+                                            className="w-full p-3 text-gray-800 outline-none border rounded-lg"
+                                            autoFocus
+                                        />
+                                        <button
+                                            onClick={()=>{return updateSubject(subject.id)}}
+                                            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md flex items-center justify-center"
+                                        >
+                                            <ArrowRight className="w-5 h-5" />
                                         </button>
                                     </div>
-                                </div>
+                                ) : (
+                                    // Show subject name with edit & delete buttons
+                                    <div
+                                        className="flex items-center justify-between bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition-all border border-gray-100">
+                                        <Link to={`/dashboard/subject/${subject.id}`} className="flex-grow text-center">
+                                            <span
+                                                className="text-gray-800 font-medium truncate">{subject.subname}</span>
+                                        </Link>
+                                        <div className="flex space-x-1 flex-shrink-0">
+                                            <button
+                                                onClick={() => {
+                                                    setEditingSubjectId(subject.id);
+                                                    setUpdateName(subject.subname);
+                                                }}
+                                                className="text-indigo-600 hover:text-indigo-800 transition-all p-1"
+                                            >
+                                                <Pencil className="w-4 h-4"/>
+                                            </button>
+                                            <button
+                                                onClick={() => deleteSubject(subject.id)}
+                                                className="text-red-500 hover:text-red-700 transition-all p-1"
+                                            >
+                                                <Trash2 className="w-4 h-4"/>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                )}
                             </li>
                         ))}
                     </ul>
@@ -126,6 +195,5 @@ export default function Sidebar() {
                 )}
             </div>
         </aside>
-    )
+    );
 }
-
