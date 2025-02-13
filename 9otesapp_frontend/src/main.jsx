@@ -20,7 +20,7 @@ const router = createBrowserRouter(
 
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                 <Route index element={<MainSection />} />
-                <Route path="subject" element={<Subject />} />
+                <Route path="subject/:subid" element={<Subject />} />
             </Route>
         </>
     )

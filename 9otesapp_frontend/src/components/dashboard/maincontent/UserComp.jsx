@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import fetchInstance  from "../FetchInstance.js";
+import fetchInstance  from "../../FetchInstance.js";
 
 export default function UserComp() {
     const [users, setUsers] = useState([]);
@@ -11,8 +11,6 @@ export default function UserComp() {
             .then((data) => setUsers(data))
             .catch((err) => console.log(err));
     };
-
-
 
     useEffect(() => {
         fetchUsers();

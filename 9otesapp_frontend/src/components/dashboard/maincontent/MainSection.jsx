@@ -1,5 +1,3 @@
-import UserComp from "./UserComp.jsx";
-
 export default function MainSection() {
 
     return (
@@ -17,7 +15,6 @@ export default function MainSection() {
                         </div>
                     ))}
                 </div>
-                <UserComp/>
             </div>
         </main>
     );
