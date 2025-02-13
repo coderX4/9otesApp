@@ -38,9 +38,7 @@ public class SubjectController {
     @DeleteMapping("/deletesub/{subid}")
     public ResponseEntity<?> deleteSubject(@PathVariable("subid") int subid) {
         Subject subject = subjectRepo.findById(subid);
-
         subjectRepo.deleteById(subid);
-
         return ResponseEntity.ok(subject);  // Return the deleted subject
     }
 
@@ -49,6 +47,12 @@ public class SubjectController {
         Subject subject = subjectRepo.findById(subid);
         subject.setSubname(updatedsubname);
         subjectRepo.save(subject);
+        return ResponseEntity.ok(subject);
+    }
+
+    @GetMapping({"/getsubject/{subid}"})
+    public ResponseEntity<Subject> getSubject(@PathVariable("subid") int subid) {
+        Subject subject = subjectRepo.findById(subid);
         return ResponseEntity.ok(subject);
     }
 

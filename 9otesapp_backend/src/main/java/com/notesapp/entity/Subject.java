@@ -3,6 +3,9 @@ package com.notesapp.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Subject {
     @Id
@@ -15,8 +18,16 @@ public class Subject {
     @JsonIgnore
     private User user;
 
-//    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Topic> topics = new ArrayList<>();
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Unit> units = new ArrayList<>();
+
+    public List<Unit> getUnits() {
+        return units;
+    }
+
+    public void setUnits(List<Unit> units) {
+        this.units = units;
+    }
 
     public Subject(int id, String subname, User user) {
         this.id = id;
