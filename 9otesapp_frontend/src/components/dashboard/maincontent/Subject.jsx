@@ -43,6 +43,7 @@ export default function Subject() {
         }
     };
 
+
     // Fetch subject data
     useEffect(() => {
         fetchSubject();
