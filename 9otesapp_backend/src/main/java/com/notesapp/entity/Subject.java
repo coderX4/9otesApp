@@ -29,10 +29,11 @@ public class Subject {
         this.units = units;
     }
 
-    public Subject(int id, String subname, User user) {
+    public Subject(int id, String subname, User user, List<Unit> units) {
         this.id = id;
         this.subname = subname;
         this.user = user;
+        this.units = units;
     }
 
     public Subject() {

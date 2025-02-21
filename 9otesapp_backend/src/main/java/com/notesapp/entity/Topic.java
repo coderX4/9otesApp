@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,8 +24,8 @@ public class Topic {
     @JsonIgnore
     private Unit unit;
 
-//    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<FileUrls> fileUrls = new ArrayList<>();
+    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FileUrls> fileUrls = new ArrayList<>();
 
 
     public int getId() {
@@ -56,11 +60,11 @@ public class Topic {
         this.topicDescription = topicDescription;
     }
 
-//    public List<FileUrls> getFileUrls() {
-//        return fileUrls;
-//    }
-//
-//    public void setFileUrls(List<FileUrls> fileUrls) {
-//        this.fileUrls = fileUrls;
-//    }
+    public List<FileUrls> getFileUrls() {
+        return fileUrls;
+    }
+
+    public void setFileUrls(List<FileUrls> fileUrls) {
+        this.fileUrls = fileUrls;
+    }
 }

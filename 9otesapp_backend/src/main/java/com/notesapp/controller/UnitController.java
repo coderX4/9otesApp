@@ -2,8 +2,10 @@ package com.notesapp.controller;
 
 import com.notesapp.entity.Subject;
 import com.notesapp.entity.Unit;
+import com.notesapp.entity.User;
 import com.notesapp.repository.SubjectRepo;
 import com.notesapp.repository.UnitRepo;
+import com.notesapp.service.SubjectService;
 import com.notesapp.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

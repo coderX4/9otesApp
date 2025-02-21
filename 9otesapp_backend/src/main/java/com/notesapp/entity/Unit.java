@@ -2,15 +2,11 @@ package com.notesapp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
 public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +20,25 @@ public class Unit {
 
     @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Topic> topics = new ArrayList<>();
+
+    public List<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
+
+    public Unit(int id, String unitname, Subject subject, List<Topic> topics) {
+        this.id = id;
+        this.unitname = unitname;
+        this.subject = subject;
+        this.topics = topics;
+    }
+
+    public Unit() {
+
+    }
 
     public int getId() {
         return id;
@@ -47,13 +62,5 @@ public class Unit {
 
     public void setSubject(Subject subject) {
         this.subject = subject;
-    }
-
-    public List<Topic> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
     }
 }
