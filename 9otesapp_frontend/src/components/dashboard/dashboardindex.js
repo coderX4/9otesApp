@@ -4,5 +4,6 @@ import Footer from './Footer.jsx';
 import Sidebar from './Sidebar.jsx';
 import MainSection from './maincontent/MainSection.jsx';
 import Subject from './maincontent/Subject.jsx';
+import FilesUpload from "./maincontent/FilesUpload.jsx";
 
-export {DashboardLayout,Header,Footer,Sidebar,MainSection,Subject};
+export {DashboardLayout,Header,Footer,Sidebar,MainSection,Subject,FilesUpload};

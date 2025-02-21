@@ -1,21 +1,13 @@
-import { Trash2, FileText, Eye } from "lucide-react";
+import { Trash2, FileText, Eye, Pencil } from "lucide-react";
 import fetchInstance from "../../FetchInstance.js";
 import { useEffect, useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 
 export default function Topics({ unitid, topics, setTopics }) {
-
-    const storedUser = sessionStorage.getItem("user");
-    const { email, password } = JSON.parse(storedUser);
-    const credentials = btoa(`${email}:${password}`);
-
-    const [showInput, setShowInput] = useState(false);
-    const [topicId, setTopicId] = useState("");
-    const [file, setFile] = useState(null);
-    const [folderName, setFolderName] = useState("");
-    const [fileUrl, setFileUrl] = useState("");
-    const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState("");
+    const [editingTopic, setEditingTopic] = useState(null);
+    const [updatedTopicName, setUpdatedTopicName] = useState("");
+    const [updatedDescription, setUpdatedDescription] = useState("");
 
     const fetchTopics = async () => {
         try {
@@ -34,121 +26,148 @@ export default function Topics({ unitid, topics, setTopics }) {
         }
     }, [unitid]); // Fetch topics only when unitid changes
 
-    // Set folder name dynamically when topicId changes
-    useEffect(() => {
-        if (topicId) {
-            setFolderName(`${email}folder`);
-        }
-    }, [topicId]);
+    const handleEdit = (topic) => {
+        setEditingTopic(topic.id);
+        setUpdatedTopicName(topic.topicName);
+        setUpdatedDescription(topic.topicDescription);
+    };
 
-    const uploadFile = async () => {
-        if (!file) {
-            alert("Please select a file to upload!");
-            return;
-        }
-
-        setUploading(true);
-        setError("");
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("topicId",topicId);
-        formData.append("folderName" ,folderName);
-
+    const handleUpdate = async () => {
         try {
-            const response = await fetch(`http://localhost:8082/api/drive/upload`, {
-                method: "POST",
+            await fetchInstance(`http://localhost:8082/api/${unitid}/updatetopic/${editingTopic}`, {
+                method: "PUT",
                 headers: {
-                    "Authorization": `Basic ${credentials}`
+                    "Content-Type": "application/json",
                 },
-                body: formData,
-                credentials: "include",
+                body: JSON.stringify({
+                    topicName: updatedTopicName,
+                    topicDescription: updatedDescription,
+                }),
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || "Upload failed!");
-            }
-
-            setFileUrl(data.link);
-            setTimeout(() => setShowInput(false),3000)
-            console.log("File uploaded successfully: ", data.link);
+            // Refresh topics
+            fetchTopics();
+            setEditingTopic(null);
         } catch (error) {
-            console.error("Upload error:", error);
-            setError("File upload failed. Please try again.");
-        } finally {
-            setUploading(false);
+            console.error("Error updating topic:", error);
         }
     };
 
-    
+    const deleteTopic = async (topicId) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await fetchInstance(`http://localhost:8082/api/${unitid}/deletetopic/${topicId}`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                    });
+                    Swal.fire("Deleted!", "The Topic has been removed.", "success");
+                    fetchTopics();
+                } catch (err) {
+                    console.error("Error deleting unit:", err);
+                    Swal.fire("Error!", "Failed to delete the topic.", "error");
+                }
+            }
+        });
+    };
 
     return (
-        <>
-            {showInput && (
-                <div style={{textAlign: "center", padding: "20px"}}>
-                    <h1>Google Drive File Upload</h1>
+        <div className="space-y-6 p-6 bg-white shadow-lg rounded-xl">
+            {topics.length === 0 ? (
+                <p className="text-gray-500 text-center">No topics available.</p>
+            ) : (
+                <div className="space-y-4">
+                    {topics.map((topic) => (
+                        <div
+                            key={topic.id}
+                            className="flex items-center justify-between p-4 border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-all bg-gradient-to-r from-indigo-50 to-blue-50"
+                        >
+                            <div className="flex flex-row gap-5 w-full">
+                                {/* Topic Name Box (Smaller - 30%) */}
+                                <div className="w-1/3 bg-white p-4 rounded-lg shadow-md border border-gray-300">
+                                    {editingTopic === topic.id ? (
+                                        <input
+                                            type="text"
+                                            value={updatedTopicName}
+                                            onChange={(e) => setUpdatedTopicName(e.target.value)}
+                                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    ) : (
+                                        <h3 className="text-lg font-semibold text-gray-800">{topic.topicName}</h3>
+                                    )}
+                                </div>
 
-                    <input type="file" onChange={(e) => setFile(e.target.files[0])}/>
-                    <button onClick={uploadFile} disabled={uploading} style={{marginTop: "10px"}}>
-                        {uploading ? "Uploading..." : "Upload"}
-                    </button>
-
-                    {error && <p style={{color: "red"}}>{error}</p>}
-
-                    {fileUrl && (
-                        <div>
-                            <h3>Uploaded File:</h3>
-                            <a href={fileUrl} target="_blank" rel="noopener noreferrer">
-                                View File
-                            </a>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {/* Topics List */}
-            <div className="space-y-4">
-                {topics.map((topic) => (
-                    <div
-                        key={topic.id}
-                        className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all p-4 border border-gray-100"
-                    >
-                        <div className="grid grid-cols-[2fr,3fr,auto] gap-4 items-center">
-                            <div className="bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
-                                {topic.topicName}
+                                {/* Topic Description Box (Larger - 70%) */}
+                                <div className="w-2/3 bg-white p-4 rounded-lg shadow-md border border-gray-300">
+                                    {editingTopic === topic.id ? (
+                                        <input
+                                            type="text"
+                                            value={updatedDescription}
+                                            onChange={(e) => setUpdatedDescription(e.target.value)}
+                                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    ) : (
+                                        <p className="text-gray-600 ">{topic.topicDescription}</p>
+                                    )}
+                                </div>
                             </div>
-                            <div className="bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
-                                {topic.topicDescription}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Link to={fileUrl}>
+
+                            {/* Action Buttons */}
+                            <div className="flex items-center space-x-3 ml-4">
+                                {editingTopic === topic.id ? (
                                     <button
-                                        className="p-2 text-indigo-600 hover:text-indigo-800 transition-colors"
-                                        title="View Topic"
+                                        onClick={handleUpdate}
+                                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
                                     >
-                                        <Eye className="w-5 h-5"/>
+                                        Save
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => handleEdit(topic)}
+                                        className="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+                                        title="Edit"
+                                    >
+                                        <Pencil className="w-5 h-5" />
+                                    </button>
+                                )}
+
+                                <Link to={`/dashboard/topic/${unitid}/${topic.id}`}>
+                                    <button
+                                        className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
+                                        title="View Details"
+                                    >
+                                        <FileText className="w-5 h-5" />
                                     </button>
                                 </Link>
+
                                 <button
-                                    onClick={() => {
-                                        setShowInput(true);
-                                        setTopicId(topic.id);
-                                    }}
-                                    className="p-2 text-indigo-600 hover:text-indigo-800 transition-colors"
-                                    title="View Details"
+                                    className="p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200"
+                                    title="Preview"
                                 >
-                                    <FileText className="w-5 h-5" />
+                                    <Eye className="w-5 h-5" />
                                 </button>
-                                <button className="p-2 text-red-500 hover:text-red-700 transition-colors">
+
+                                <button
+                                    onClick={() => deleteTopic(topic.id)}
+                                    className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+                                    title="Delete"
+                                >
                                     <Trash2 className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-        </>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
