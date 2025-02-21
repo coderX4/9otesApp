@@ -1,31 +1,19 @@
 package com.notesapp.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@NoArgsConstructor
 @AllArgsConstructor
-public class Topic {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+@NoArgsConstructor
+public class TopicData {
     private int id;
+    private String subjectName;
+    private String unitName;
     private String topicName;
     private String topicDescription;
-
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    @JsonIgnore
-    private Unit unit;
-
-    @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileUrls> fileUrls = new ArrayList<>();
-
+    private List<FileUrls> fileUrls;
 
     public int getId() {
         return id;
@@ -35,20 +23,28 @@ public class Topic {
         this.id = id;
     }
 
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
+
     public String getTopicName() {
         return topicName;
     }
 
     public void setTopicName(String topicName) {
         this.topicName = topicName;
-    }
-
-    public Unit getUnit() {
-        return unit;
-    }
-
-    public void setUnit(Unit unit) {
-        this.unit = unit;
     }
 
     public String getTopicDescription() {

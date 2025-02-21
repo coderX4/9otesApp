@@ -2,7 +2,6 @@ package com.notesapp.service.impl;
 
 import com.notesapp.entity.Subject;
 import com.notesapp.entity.Unit;
-import com.notesapp.entity.User;
 import com.notesapp.repository.SubjectRepo;
 import com.notesapp.repository.UnitRepo;
 import com.notesapp.service.UnitService;

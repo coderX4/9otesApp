@@ -3,6 +3,7 @@ package com.notesapp.service.impl;
 import com.notesapp.entity.Subject;
 import com.notesapp.entity.User;
 import com.notesapp.repository.SubjectRepo;
+import com.notesapp.repository.UnitRepo;
 import com.notesapp.repository.UserRepo;
 import com.notesapp.service.SubjectService;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,12 @@ import java.util.List;
 public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepo subjectRepo;
+    private final UnitRepo unitRepo;
     private final UserRepo userRepo;
 
-    public SubjectServiceImpl(SubjectRepo subjectRepo, UserRepo userRepo) {
+    public SubjectServiceImpl(SubjectRepo subjectRepo, UnitRepo unitRepo, UserRepo userRepo) {
         this.subjectRepo = subjectRepo;
+        this.unitRepo = unitRepo;
         this.userRepo = userRepo;
     }
 

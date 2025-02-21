@@ -14,4 +14,5 @@ public interface SubjectService {
     Subject getSubjectById(int subid);
 
     void deleteSub(int id);
+
 }

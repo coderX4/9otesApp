@@ -1,6 +1,8 @@
 package com.notesapp.controller;
 
+import com.notesapp.entity.Subject;
 import com.notesapp.entity.Topic;
+import com.notesapp.entity.TopicData;
 import com.notesapp.entity.Unit;
 import com.notesapp.repository.TopicRepo;
 import com.notesapp.repository.UnitRepo;
@@ -43,17 +45,32 @@ public class TopicController {
     }
 
     @PutMapping({"/updatetopic/{topicid}"})
-    public ResponseEntity<?> updateTopic(@PathVariable("topicid") int topicid, @RequestParam("topicname") String updatedtopicname ) {
-        Topic topic = topicRepo.findById(topicid);
-        topic.setTopicName(updatedtopicname);
+    public ResponseEntity<?> updateTopic(@PathVariable("topicid") int topicid, @RequestBody Topic topic) {
+
+        Topic topicUpdated = topicRepo.findById(topicid);
+        topicUpdated.setTopicName(topic.getTopicName());
+        topicUpdated.setTopicDescription(topic.getTopicDescription());
         topicRepo.save(topic);
-        return ResponseEntity.ok(topic);
+        return ResponseEntity.ok(topicUpdated);
     }
 
-    @GetMapping({"/gettopic/{topicid}"})
-    public ResponseEntity<Topic> getTopic(@PathVariable("topicid") int topicid) {
-        Topic topic = topicRepo.findById(topicid);
-        return ResponseEntity.ok(topic);
+    @GetMapping({"/gettopicdata/{topicid}"})
+    public ResponseEntity<TopicData> getTopic(@PathVariable("unitId") int unitId,
+                                          @PathVariable("topicid") int topicId) {
+
+        Unit unit = unitRepo.findById(unitId);
+        Topic topic = topicRepo.findById(topicId);
+        Subject subject = unit.getSubject();
+
+        TopicData topicData = new TopicData();
+        topicData.setId(topicId);
+        topicData.setSubjectName(subject.getSubname());
+        topicData.setUnitName(unit.getUnitname());
+        topicData.setTopicName(topic.getTopicName());
+        topicData.setTopicDescription(topic.getTopicDescription());
+        //topicData.setFileUrls(topic.getFileUrls());
+
+        return ResponseEntity.ok(topicData);
     }
 
 }

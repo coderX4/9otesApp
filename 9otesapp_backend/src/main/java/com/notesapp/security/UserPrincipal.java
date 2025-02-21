@@ -2,13 +2,10 @@ package com.notesapp.security;
 
 import com.notesapp.entity.User;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-
-import static java.util.Collection.*;
 
 public class UserPrincipal implements UserDetails {
 

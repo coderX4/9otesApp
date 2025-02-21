@@ -1,12 +1,10 @@
 package com.notesapp.controller;
 
 import com.notesapp.entity.FileUrls;
-import com.notesapp.entity.Topic;
 import com.notesapp.service.FileUrlsService;
 import com.notesapp.service.GoogleDriveService;
 import com.notesapp.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

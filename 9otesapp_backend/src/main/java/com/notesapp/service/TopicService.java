@@ -1,6 +1,5 @@
 package com.notesapp.service;
 
-import com.notesapp.entity.Subject;
 import com.notesapp.entity.Topic;
 import com.notesapp.entity.Unit;
 
