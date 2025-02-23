@@ -26,6 +26,15 @@ public class Topic {
     @OneToMany(mappedBy = "topic", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FileUrls> fileUrls = new ArrayList<>();
 
+    private int previewStateId = -1;
+
+    public int getPreviewStateId() {
+        return previewStateId;
+    }
+
+    public void setPreviewStateId(int previewStateId) {
+        this.previewStateId = previewStateId;
+    }
 
     public int getId() {
         return id;

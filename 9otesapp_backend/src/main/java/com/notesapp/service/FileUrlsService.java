@@ -9,5 +9,5 @@ public interface FileUrlsService {
     FileUrls addFileUrls(int topicId, FileUrls fileUrls);
     List<FileUrls> getFileUrlsByTopic(Topic topic);
     FileUrls getFileUrlsById(int id);
-    void deleteFileUrls(int id);
+    void deleteFileUrl(int id);
 }

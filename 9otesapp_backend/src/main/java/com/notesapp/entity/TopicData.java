@@ -62,4 +62,5 @@ public class TopicData {
     public void setFileUrls(List<FileUrls> fileUrls) {
         this.fileUrls = fileUrls;
     }
+
 }

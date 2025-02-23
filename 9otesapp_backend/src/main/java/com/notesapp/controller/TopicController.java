@@ -1,9 +1,7 @@
 package com.notesapp.controller;
 
-import com.notesapp.entity.Subject;
-import com.notesapp.entity.Topic;
-import com.notesapp.entity.TopicData;
-import com.notesapp.entity.Unit;
+import com.notesapp.entity.*;
+import com.notesapp.repository.FileUrlsRepo;
 import com.notesapp.repository.TopicRepo;
 import com.notesapp.repository.UnitRepo;
 import com.notesapp.service.TopicService;
@@ -25,6 +23,9 @@ public class TopicController {
 
     @Autowired
     private UnitRepo unitRepo;
+
+    @Autowired
+    private FileUrlsRepo fileUrlsRepo;
 
     @GetMapping({"/getalltopics"})
     public List<Topic> gettopics(@PathVariable("unitId") int unitId) {
@@ -68,9 +69,17 @@ public class TopicController {
         topicData.setUnitName(unit.getUnitname());
         topicData.setTopicName(topic.getTopicName());
         topicData.setTopicDescription(topic.getTopicDescription());
-        //topicData.setFileUrls(topic.getFileUrls());
 
         return ResponseEntity.ok(topicData);
     }
 
+    @GetMapping({"/showpreview/{topicId}"})
+    public ResponseEntity<String> showPreview(@PathVariable("topicId") int topicId) {
+        Topic topic = topicRepo.findById(topicId);
+        int fileId = topic.getPreviewStateId();
+
+        FileUrls file = fileUrlsRepo.findById(fileId);
+        String fileUrl = file.getUrl();
+        return ResponseEntity.ok(fileUrl);
+    }
 }

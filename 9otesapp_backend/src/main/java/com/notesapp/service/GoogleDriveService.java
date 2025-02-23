@@ -74,7 +74,7 @@ public class GoogleDriveService {
     /**
      *  Uploads a file inside a dynamically created Google Drive subfolder within the static parent folder.
      */
-    public String uploadFile(MultipartFile file, String folderName) {
+    public String uploadFile(MultipartFile file, String folderName,String fileName) {
         try {
             Drive driveService = getDriveService();
 
@@ -83,7 +83,7 @@ public class GoogleDriveService {
 
             //  Step 2: Prepare file metadata
             File fileMetadata = new File();
-            fileMetadata.setName(file.getOriginalFilename());
+            fileMetadata.setName(fileName);
             fileMetadata.setParents(Collections.singletonList(folderId));  // Upload into the correct folder
 
             InputStreamContent fileContent = new InputStreamContent(
@@ -112,4 +112,47 @@ public class GoogleDriveService {
             return "File upload failed. Error: " + e.getMessage();
         }
     }
+
+    public String deleteFile(String folderName, String fileName) {
+        try {
+            Drive driveService = getDriveService();
+
+            // Step 1: Get folder ID inside PARENT_FOLDER_ID
+            String folderQuery = "mimeType='application/vnd.google-apps.folder' and name='" + folderName + "' and '" + PARENT_FOLDER_ID + "' in parents and trashed=false";
+            FileList folderResult = driveService.files().list()
+                    .setQ(folderQuery)
+                    .setFields("files(id, name)")
+                    .execute();
+
+            if (folderResult.getFiles().isEmpty()) {
+                System.out.println("Folder not found: " + folderName);
+                return "Folder not found";
+            }
+
+            String folderId = folderResult.getFiles().get(0).getId();
+
+            // Step 2: Search for the file in the specified folder
+            String fileQuery = "name='" + fileName + "' and '" + folderId + "' in parents and trashed=false";
+            FileList fileResult = driveService.files().list()
+                    .setQ(fileQuery)
+                    .setFields("files(id, name)")
+                    .execute();
+
+            if (fileResult.getFiles().isEmpty()) {
+                System.out.println("File not found: " + fileName);
+                return "File not found";
+            }
+
+            // Step 3: Delete the file
+            String fileId = fileResult.getFiles().get(0).getId();
+            driveService.files().delete(fileId).execute();
+
+            System.out.println("File deleted successfully: " + fileName);
+            return "File deleted successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "File deletion failed. Error: " + e.getMessage();
+        }
+    }
+
 }

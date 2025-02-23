@@ -38,7 +38,7 @@ public class FileUrlsServiceImpl implements FileUrlsService {
     }
 
     @Override
-    public void deleteFileUrls(int id) {
+    public void deleteFileUrl(int id) {
         fileUrlsRepo.deleteById(id);
     }
 }
