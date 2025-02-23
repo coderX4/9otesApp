@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import fetchInstance from "../../FetchInstance.js";
+import FileUrlsComp from "./FileUrlsComp.jsx";
+import {UploadCloud} from "lucide-react";
 
 export default function FilesUpload() {
     const { unitid, topicid } = useParams();
@@ -11,7 +13,7 @@ export default function FilesUpload() {
     const [topicData, setTopicData] = useState({});
     const [file, setFile] = useState(null);
     const [folderName, setFolderName] = useState("");
-    const [fileUrl, setFileUrl] = useState("");
+    const [comment, setComment] = useState("");
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
     const [dragActive, setDragActive] = useState(false);
@@ -59,6 +61,10 @@ export default function FilesUpload() {
             alert("Please select a file to upload!");
             return;
         }
+        if (!comment.trim()) {
+            alert("Please enter a description for the file!");
+            return;
+        }
 
         setUploading(true);
         setError("");
@@ -67,6 +73,7 @@ export default function FilesUpload() {
         formData.append("file", file);
         formData.append("topicId", topicid);
         formData.append("folderName", folderName);
+        formData.append("comment", comment);
 
         try {
             const response = await fetch(`http://localhost:8082/api/drive/upload`, {
@@ -80,8 +87,8 @@ export default function FilesUpload() {
 
             if (!response.ok) throw new Error(data.error || "Upload failed!");
 
-            setFileUrl(data.link);
-            console.log("File uploaded successfully: ", data.link);
+            setComment("")
+            fetchFileUrls();
         } catch (error) {
             console.error("Upload error:", error);
             setError("File upload failed. Please try again.");
@@ -89,6 +96,28 @@ export default function FilesUpload() {
             setUploading(false);
         }
     };
+
+    const [fileUrls, setFileUrls] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error1, setError1] = useState(null);
+
+    const fetchFileUrls = async () => {
+        try {
+            const data = await fetchInstance(`http://localhost:8082/api/drive/getUrls/${topicid}`, {
+                method: "GET",
+            });
+            setFileUrls(data);
+            // eslint-disable-next-line no-unused-vars
+        } catch (error1) {
+            setError1("Failed to load file URLs.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFileUrls();
+    }, [topicid]);
 
     return (
         <div className="flex-1 p-8 bg-white bg-opacity-60 backdrop-blur-lg shadow-lg rounded-l-2xl bg-gradient-to-br from-blue-100 to-indigo-300">
@@ -106,7 +135,8 @@ export default function FilesUpload() {
                 </div>
 
                 {/* Upload Container */}
-                <div className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 p-6 rounded-lg shadow-md flex flex-col items-center gap-4">
+                <div
+                    className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 p-6 rounded-lg shadow-md flex flex-col items-center gap-4">
                     {/* Drag & Drop Input */}
                     <div
                         className={`w-full p-5 border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition ${
@@ -120,34 +150,38 @@ export default function FilesUpload() {
                         <p className="text-gray-500 text-sm">or</p>
                         <label className="cursor-pointer text-blue-600 font-semibold hover:underline">
                             Click to select a file
-                            <input type="file" onChange={(e) => setFile(e.target.files[0])} className="hidden" />
+                            <input type="file" onChange={(e) => setFile(e.target.files[0])} className="hidden"/>
                         </label>
                         {file && <p className="mt-2 text-sm text-gray-800">{file.name}</p>}
                     </div>
+
+                    {/* Description Input */}
+                    <input
+                        type="text"
+                        placeholder="Enter file comment"
+                        value={comment}
+                        onChange={(e) => setComment(e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
 
                     {/* Upload Button */}
                     <button
                         onClick={uploadFile}
                         disabled={uploading}
-                        className={`px-5 py-2 rounded-lg text-white font-semibold transition duration-200 ${
+                        className={`flex items-center gap-2 px-5 py-2 rounded-lg text-white font-semibold transition duration-200 ${
                             uploading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
                         }`}
                     >
+                        <UploadCloud size={20} className={uploading ? "text-gray-300" : "text-white"}/>
                         {uploading ? "Uploading..." : "Upload"}
                     </button>
 
                     {/* Error Message */}
                     {error && <p className="text-red-600 font-medium">{error}</p>}
 
-                    {/* Uploaded File Link */}
-                    {fileUrl && (
-                        <div className="text-center">
-                            <h3 className="text-lg font-semibold text-gray-800">Uploaded File:</h3>
-                            <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                View File
-                            </a>
-                        </div>
-                    )}
+                    <FileUrlsComp topicId={topicid} fileUrls={fileUrls} loading={loading} error={error1}/>
+
                 </div>
             </div>
         </div>

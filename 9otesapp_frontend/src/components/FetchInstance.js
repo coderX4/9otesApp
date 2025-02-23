@@ -1,5 +1,4 @@
 const fetchInstance = async (url, options = {}) => {
-    // Retrieve stored user credentials from sessionStorage
     const storedUser = sessionStorage.getItem("user");
     let authHeaders = {};
 
@@ -14,7 +13,6 @@ const fetchInstance = async (url, options = {}) => {
         }
     }
 
-    // Set default headers and merge with options
     const fetchOptions = {
         ...options,
         headers: {
@@ -22,7 +20,7 @@ const fetchInstance = async (url, options = {}) => {
             ...authHeaders,
             ...(options.headers || {})
         },
-        credentials: "include" // Ensures cookies (session-based authentication) are included
+        credentials: "include"
     };
 
     try {
@@ -30,10 +28,17 @@ const fetchInstance = async (url, options = {}) => {
         if (!response.ok) {
             throw new Error(`Request failed with status ${response.status}`);
         }
-        return response.json(); // Automatically parse JSON response
+
+        // Check if the response is JSON or plain text
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            return response.json(); // Parse JSON response
+        } else {
+            return response.text(); // Return plain text (string URL)
+        }
     } catch (error) {
         console.error("Fetch error:", error);
-        throw error; // Re-throw for handling in the calling function
+        throw error;
     }
 };
 

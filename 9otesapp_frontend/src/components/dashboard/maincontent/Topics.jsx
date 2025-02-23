@@ -1,4 +1,4 @@
-import { Trash2, FileText, Eye, Pencil } from "lucide-react";
+import {Trash2, FileText, Eye, Pencil, Upload} from "lucide-react";
 import fetchInstance from "../../FetchInstance.js";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -80,6 +80,20 @@ export default function Topics({ unitid, topics, setTopics }) {
         });
     };
 
+    const handlePreviewClick = async (topicId) => {
+        try {
+            const fileUrl = await fetchInstance(`http://localhost:8082/api/${unitid}/showpreview/${topicId}`, {
+                method: "GET",
+            });
+
+            console.log("API Response URL:", fileUrl);
+            //window.location.href = fileUrl; // Navigate to the received URL same window
+            window.open(fileUrl, "_blank"); // Opens in a new tab
+        } catch (err) {
+            console.error(err.message || err);
+        }
+    };
+
     return (
         <div className="space-y-6 p-6 bg-white shadow-lg rounded-xl">
             {topics.length === 0 ? (
@@ -123,6 +137,7 @@ export default function Topics({ unitid, topics, setTopics }) {
 
                             {/* Action Buttons */}
                             <div className="flex items-center space-x-3 ml-4">
+
                                 {editingTopic === topic.id ? (
                                     <button
                                         onClick={handleUpdate}
@@ -132,11 +147,11 @@ export default function Topics({ unitid, topics, setTopics }) {
                                     </button>
                                 ) : (
                                     <button
-                                        onClick={() => handleEdit(topic)}
-                                        className="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                                        title="Edit"
+                                        onClick={() => handlePreviewClick(topic.id)}
+                                        className="p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200"
+                                        title="Preview"
                                     >
-                                        <Pencil className="w-5 h-5" />
+                                        <FileText className="w-5 h-5"/>
                                     </button>
                                 )}
 
@@ -145,15 +160,16 @@ export default function Topics({ unitid, topics, setTopics }) {
                                         className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
                                         title="View Details"
                                     >
-                                        <FileText className="w-5 h-5" />
+                                        <Upload className="w-5 h-5"/>
                                     </button>
                                 </Link>
 
                                 <button
-                                    className="p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200"
-                                    title="Preview"
+                                    onClick={() => handleEdit(topic)}
+                                    className="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+                                    title="Edit"
                                 >
-                                    <Eye className="w-5 h-5" />
+                                    <Pencil className="w-5 h-5"/>
                                 </button>
 
                                 <button
@@ -161,7 +177,7 @@ export default function Topics({ unitid, topics, setTopics }) {
                                     className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
                                     title="Delete"
                                 >
-                                    <Trash2 className="w-5 h-5" />
+                                    <Trash2 className="w-5 h-5"/>
                                 </button>
                             </div>
                         </div>
