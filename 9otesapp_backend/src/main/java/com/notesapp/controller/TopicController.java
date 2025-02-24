@@ -1,9 +1,13 @@
 package com.notesapp.controller;
 
-import com.notesapp.entity.*;
+import com.notesapp.entity.FileUrls;
+import com.notesapp.entity.Subject;
+import com.notesapp.entity.Topic;
+import com.notesapp.entity.Unit;
 import com.notesapp.repository.FileUrlsRepo;
 import com.notesapp.repository.TopicRepo;
 import com.notesapp.repository.UnitRepo;
+import com.notesapp.requests.TopicData;
 import com.notesapp.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +61,7 @@ public class TopicController {
 
     @GetMapping({"/gettopicdata/{topicid}"})
     public ResponseEntity<TopicData> getTopic(@PathVariable("unitId") int unitId,
-                                          @PathVariable("topicid") int topicId) {
+                                              @PathVariable("topicid") int topicId) {
 
         Unit unit = unitRepo.findById(unitId);
         Topic topic = topicRepo.findById(topicId);

@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/adduser").permitAll()
                         .requestMatchers("/api/user/login").permitAll()
                         .requestMatchers("/api/user/google-login").permitAll()
+                        .requestMatchers("api/sharedSubject/getSubject/{subId}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

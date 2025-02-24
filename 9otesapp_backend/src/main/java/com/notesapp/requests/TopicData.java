@@ -1,5 +1,6 @@
-package com.notesapp.entity;
+package com.notesapp.requests;
 
+import com.notesapp.entity.FileUrls;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
