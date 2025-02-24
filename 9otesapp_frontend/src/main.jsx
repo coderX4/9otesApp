@@ -7,6 +7,7 @@ import { DashboardLayout ,MainSection,Subject,FilesUpload} from './components/da
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {AuthProvider} from "./components/AuthContext.jsx";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import SubjectContent from "./components/global/sections/SubjectContent.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -16,13 +17,16 @@ const router = createBrowserRouter(
                 <Route path="aboutus" element={<Aboutus />} />
                 <Route path="contactus" element={<Contact />} />
                 <Route path="signin" element={<LoginForm />} />
+                <Route path="sharedSubject/:subId" element={<SubjectContent />} />
             </Route>
 
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                 <Route index element={<MainSection />} />
+                <Route path="mainsection" element={<MainSection />} />
                 <Route path="subject/:subid" element={<Subject />} />
                 <Route path="topic/:unitid/:topicid" element={<FilesUpload />} />
             </Route>
+
         </>
     )
 );
