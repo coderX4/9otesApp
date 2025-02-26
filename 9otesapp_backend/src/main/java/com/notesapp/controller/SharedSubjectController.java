@@ -19,4 +19,5 @@ public class SharedSubjectController {
         Subject subject = subjectService.getSubjectById(subId);
         return ResponseEntity.ok(subject);
     }
+
 }
