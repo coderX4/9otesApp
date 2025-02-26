@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
 import { HomeLayout, LoginForm, Home_Register, Aboutus, Contact } from './components/global/globalindex.js';
-import { DashboardLayout ,MainSection,Subject,FilesUpload} from './components/dashboard/dashboardindex.js';
+import {DashboardLayout, MainSection, Subject, FilesUpload, ImportedSubject} from './components/dashboard/dashboardindex.js';
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import {AuthProvider} from "./components/AuthContext.jsx";
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -23,6 +23,7 @@ const router = createBrowserRouter(
             <Route path="/dashboard" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
                 <Route index element={<MainSection />} />
                 <Route path="mainsection" element={<MainSection />} />
+                <Route path="importSubject" element={<ImportedSubject />} />
                 <Route path="subject/:subid" element={<Subject />} />
                 <Route path="topic/:unitid/:topicid" element={<FilesUpload />} />
             </Route>

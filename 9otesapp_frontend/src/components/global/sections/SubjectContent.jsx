@@ -37,7 +37,7 @@ export default function SubjectContent() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 to-indigo-200 p-6">
+        <div className="mt-3 w-full bg-gradient-to-br from-blue-100 to-indigo-200 p-6">
             <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
                 <div className="bg-gradient-to-r from-indigo-700 to-blue-500 p-6 text-white text-3xl font-bold tracking-wide">
                     {subject.subname || "Loading..."}

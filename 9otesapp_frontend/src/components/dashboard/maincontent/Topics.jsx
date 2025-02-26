@@ -1,4 +1,4 @@
-import {Trash2, FileText, Eye, Pencil, Upload} from "lucide-react";
+import {Trash2, FileText, Eye, Pencil, Upload, EllipsisVertical} from "lucide-react";
 import fetchInstance from "../../FetchInstance.js";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -8,6 +8,8 @@ export default function Topics({ unitid, topics, setTopics }) {
     const [editingTopic, setEditingTopic] = useState(null);
     const [updatedTopicName, setUpdatedTopicName] = useState("");
     const [updatedDescription, setUpdatedDescription] = useState("");
+
+    const [openDropdownId, setOpenDropdownId] = useState(null);
 
     const fetchTopics = async () => {
         try {
@@ -138,47 +140,68 @@ export default function Topics({ unitid, topics, setTopics }) {
                             {/* Action Buttons */}
                             <div className="flex items-center space-x-3 ml-4">
 
-                                {editingTopic === topic.id ? (
-                                    <button
-                                        onClick={handleUpdate}
-                                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
-                                    >
-                                        Save
-                                    </button>
+                                {openDropdownId === topic.id ? (
+                                    <>
+                                        <button
+                                            onClick={() => handleEdit(topic)}
+                                            className="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+                                            title="Edit"
+                                        >
+                                            <Pencil className="w-5 h-5"/>
+                                        </button>
+
+                                        <button
+                                            onClick={() => deleteTopic(topic.id)}
+                                            className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-5 h-5"/>
+                                        </button>
+
+                                        <button
+                                            onClick={() => setOpenDropdownId(null)}
+                                            className="text-gray-600 hover:text-gray-900 transition-all p-2 rounded-md min-h-[40px] flex items-center justify-center"
+                                        >
+                                            <EllipsisVertical className="w-5 h-5"/>
+                                        </button>
+
+                                    </>
                                 ) : (
-                                    <button
-                                        onClick={() => handlePreviewClick(topic.id)}
-                                        className="p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200"
-                                        title="Preview"
-                                    >
-                                        <FileText className="w-5 h-5"/>
-                                    </button>
+                                    <>
+                                        {editingTopic === topic.id ? (
+                                            <button
+                                                onClick={handleUpdate}
+                                                className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                                            >
+                                                Save
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => handlePreviewClick(topic.id)}
+                                                className="p-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition duration-200"
+                                                title="Preview"
+                                            >
+                                                <FileText className="w-5 h-5"/>
+                                            </button>
+                                        )}
+
+                                        <Link to={`/dashboard/topic/${unitid}/${topic.id}`}>
+                                            <button
+                                                className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
+                                                title="File Upload"
+                                            >
+                                                <Upload className="w-5 h-5"/>
+                                            </button>
+                                        </Link>
+
+                                        <button
+                                            onClick={() => setOpenDropdownId(topic.id)}
+                                            className="text-gray-600 hover:text-gray-900 transition-all p-2 rounded-md min-h-[40px] flex items-center justify-center"
+                                        >
+                                            <EllipsisVertical className="w-5 h-5"/>
+                                        </button>
+                                    </>
                                 )}
-
-                                <Link to={`/dashboard/topic/${unitid}/${topic.id}`}>
-                                    <button
-                                        className="p-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-200"
-                                        title="View Details"
-                                    >
-                                        <Upload className="w-5 h-5"/>
-                                    </button>
-                                </Link>
-
-                                <button
-                                    onClick={() => handleEdit(topic)}
-                                    className="p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                                    title="Edit"
-                                >
-                                    <Pencil className="w-5 h-5"/>
-                                </button>
-
-                                <button
-                                    onClick={() => deleteTopic(topic.id)}
-                                    className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
-                                    title="Delete"
-                                >
-                                    <Trash2 className="w-5 h-5"/>
-                                </button>
                             </div>
                         </div>
                     ))}

@@ -1,10 +1,11 @@
-import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
+import {ArrowRight, EllipsisVertical, Pencil, Plus, Trash2} from "lucide-react";
 import Swal from "sweetalert2";
 import fetchInstance from "../../FetchInstance.js";
 import { useEffect, useState } from "react";
 import Topics from "./Topics.jsx";
 
 export default function Units({ subid, Units, setUnits }) {
+    const [openDropdownId, setOpenDropdownId] = useState(null);
     const [editingUnitId, setEditingUnitId] = useState(null);
     const [updateUnitName, setUpdateUnitName] = useState("");
     const [unitTopics, setUnitTopics] = useState({}); // Stores topics per unit
@@ -28,6 +29,11 @@ export default function Units({ subid, Units, setUnits }) {
             console.error("Error fetching units:", err);
         }
     };
+
+    const toggleActions = () => {
+        setActiveUnit((prev) => (prev === null ? true : null)); // Toggle between `true` and `null`
+    };
+
 
     const updateUnit = async (unitId) => {
         if (!updateUnitName.trim()) return;
@@ -134,59 +140,79 @@ export default function Units({ subid, Units, setUnits }) {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex space-x-3">
+                            <div className="flex items-center space-x-3 min-h-[40px]">
                                 <button
                                     onClick={() => setTopicForm({ unitId: unit.id, topicName: "", topicDescription: "" })}
-                                    className="flex items-center space-x-1 bg-indigo-600 text-white hover:bg-indigo-700 transition-all px-3 py-1.5 rounded-md"
+                                    className="flex items-center space-x-1 bg-indigo-600 text-white hover:bg-indigo-700 transition-all px-3 py-2 rounded-md min-h-[40px]"
                                 >
                                     <Plus className="w-4 h-4" />
                                     <span className="text-sm">Add Topic</span>
                                 </button>
-                                <button
-                                    onClick={() => {
-                                        setEditingUnitId(unit.id);
-                                        setUpdateUnitName(unit.unitname);
-                                    }}
-                                    className="p-2 rounded-md text-blue-600 hover:bg-blue-100 transition"
-                                >
-                                    <Pencil className="w-5 h-5" />
-                                </button>
-                                <button
-                                    onClick={() => deleteUnit(unit.id)}
-                                    className="p-2 rounded-md text-red-600 hover:bg-red-100 transition"
-                                >
-                                    <Trash2 className="w-5 h-5" />
-                                </button>
+
+                                {openDropdownId === unit.id ? (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                setEditingUnitId(unit.id);
+                                                setUpdateUnitName(unit.unitname);
+                                            }}
+                                            className="p-2 rounded-md text-blue-600 hover:bg-blue-100 transition min-h-[40px] flex items-center justify-center"
+                                        >
+                                            <Pencil className="w-5 h-5"/>
+                                        </button>
+                                        <button
+                                            onClick={() => deleteUnit(unit.id)}
+                                            className="p-2 rounded-md text-red-600 hover:bg-red-100 transition min-h-[40px] flex items-center justify-center"
+                                        >
+                                            <Trash2 className="w-5 h-5"/>
+                                        </button>
+                                        <button
+                                            onClick={() => setOpenDropdownId(null)}
+                                            className="text-gray-600 hover:text-gray-900 transition-all p-1"
+                                        >
+                                            <EllipsisVertical className="w-5 h-5"/>
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={() => setOpenDropdownId(unit.id)}
+                                        className="text-gray-600 hover:text-gray-900 transition-all p-2 rounded-md min-h-[40px] flex items-center justify-center"
+                                    >
+                                        <EllipsisVertical className="w-5 h-5"/>
+                                    </button>
+                                )}
                             </div>
+
                         </div>
 
                         {/* Topic Form */}
                         {topicForm.unitId === unit.id && (
-                            <div className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 rounded-xl p-4 mt-2">
-                                <div className="flex items-center space-x-4">
+                            <div className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 rounded-xl p-6 mt-4 flex justify-center">
+                                <div className="flex flex-col items-center space-y-4 w-full max-w-2xl">
                                     <input
                                         type="text"
                                         value={topicForm.topicName}
                                         onChange={(e) => setTopicForm((prev) => ({ ...prev, topicName: e.target.value }))}
-                                        className="w-1/3 px-3 py-2 border rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none text-center shadow-sm"
                                         placeholder="New Topic Name"
                                     />
                                     <input
                                         type="text"
                                         value={topicForm.topicDescription}
                                         onChange={(e) => setTopicForm((prev) => ({ ...prev, topicDescription: e.target.value }))}
-                                        className="w-2/3 px-3 py-2 border rounded-lg focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none text-center shadow-sm"
                                         placeholder="New Topic Description"
                                     />
                                     <button
                                         onClick={handleAddTopic}
-                                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                                        className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-md"
                                     >
                                         Add
                                     </button>
                                 </div>
                             </div>
                         )}
+
 
                         {/* Topics List */}
                         <div className="mt-3">
