@@ -1,61 +1,61 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import fetchInstance from "../../FetchInstance.js";
-import FileUrlsComp from "./FileUrlsComp.jsx";
-import {UploadCloud,ArrowLeft} from "lucide-react";
-import Swal from "sweetalert2";
+"use client"
+
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import fetchInstance from "../../FetchInstance.js"
+import FileUrlsComp from "./FileUrlsComp.jsx"
+import { UploadCloud, ArrowLeft } from "lucide-react"
+import Swal from "sweetalert2"
+import { baseUrl } from "../dashboardindex.js"
 
 export default function FilesUpload() {
-    const { unitid, topicid } = useParams();
-    const storedUser = sessionStorage.getItem("user");
-    const { email, password } = JSON.parse(storedUser);
-    const credentials = btoa(`${email}:${password}`);
+    const { unitid, topicid } = useParams()
+    const storedUser = sessionStorage.getItem("user")
+    const { email, password } = JSON.parse(storedUser)
+    const credentials = btoa(`${email}:${password}`)
 
-    const [topicData, setTopicData] = useState({});
-    const [file, setFile] = useState(null);
-    const [folderName, setFolderName] = useState("");
-    const [comment, setComment] = useState("");
-    const [uploading, setUploading] = useState(false);
-    const [error, setError] = useState("");
-    const [dragActive, setDragActive] = useState(false);
+    const [topicData, setTopicData] = useState({})
+    const [file, setFile] = useState(null)
+    const [folderName, setFolderName] = useState("")
+    const [comment, setComment] = useState("")
+    const [uploading, setUploading] = useState(false)
+    const [error, setError] = useState("")
+    const [dragActive, setDragActive] = useState(false)
 
     useEffect(() => {
         const fetchTopicData = async () => {
             try {
-                const data = await fetchInstance(
-                    `http://localhost:8082/api/${unitid}/gettopicdata/${topicid}`,
-                    { method: "GET" }
-                );
-                setTopicData(data);
+                const data = await fetchInstance(`${baseUrl}/api/${unitid}/gettopicdata/${topicid}`, { method: "GET" })
+                setTopicData(data)
             } catch (err) {
-                console.error("Error fetching topic data:", err);
+                console.error("Error fetching topic data:", err)
             }
-        };
-        fetchTopicData();
-    }, []);
+        }
+        fetchTopicData()
+    }, [unitid, topicid]) // Added unitid and topicid as dependencies
 
     useEffect(() => {
         if (topicData) {
-            setFolderName(`${email}folder`);
+            setFolderName(`${email}folder`)
         }
-    }, [topicData]);
+    }, [topicData, email]) // Added email as a dependency
 
     const handleDragOver = (e) => {
-        e.preventDefault();
-        setDragActive(true);
-    };
+        e.preventDefault()
+        setDragActive(true)
+    }
 
     const handleDragLeave = () => {
-        setDragActive(false);
-    };
+        setDragActive(false)
+    }
 
     const handleDrop = (e) => {
-        e.preventDefault();
-        setDragActive(false);
+        e.preventDefault()
+        setDragActive(false)
         if (e.dataTransfer.files.length > 0) {
-            setFile(e.dataTransfer.files[0]);
+            setFile(e.dataTransfer.files[0])
         }
-    };
+    }
 
     const uploadFile = async () => {
         if (!file) {
@@ -64,8 +64,8 @@ export default function FilesUpload() {
                 title: "No File Selected",
                 text: "Please select a file to upload!",
                 confirmButtonColor: "#6366F1",
-            });
-            return;
+            })
+            return
         }
         if (!comment.trim()) {
             Swal.fire({
@@ -73,105 +73,103 @@ export default function FilesUpload() {
                 title: "Missing Comment",
                 text: "Please enter a comment for the file upload!",
                 confirmButtonColor: "#6366F1",
-            });
-            return;
+            })
+            return
         }
 
-        setUploading(true);
-        setError("");
+        setUploading(true)
+        setError("")
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("topicId", topicid);
-        formData.append("folderName", folderName);
-        formData.append("comment", comment);
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("topicId", topicid)
+        formData.append("folderName", folderName)
+        formData.append("comment", comment)
 
         try {
-            const response = await fetch(`http://localhost:8082/api/drive/upload`, {
+            const response = await fetch(`${baseUrl}/api/drive/upload`, {
                 method: "POST",
                 headers: { Authorization: `Basic ${credentials}` },
                 body: formData,
                 credentials: "include",
-            });
+            })
 
-            const data = await response.json();
+            const data = await response.json()
 
-            if (!response.ok) throw new Error(data.error || "Upload failed!");
+            if (!response.ok) throw new Error(data.error || "Upload failed!")
 
-            setComment("");
-            fetchFileUrls();
+            setComment("")
+            fetchFileUrls()
 
             Swal.fire({
                 icon: "success",
                 title: "Upload Successful!",
                 text: "Your file has been uploaded successfully.",
                 confirmButtonColor: "#22C55E",
-            });
+            })
         } catch (error) {
-            console.error("Upload error:", error);
-            setError("File upload failed. Please try again.");
+            console.error("Upload error:", error)
+            setError("File upload failed. Please try again.")
 
             Swal.fire({
                 icon: "error",
                 title: "Upload Failed",
                 text: "File upload failed. Please try again.",
                 confirmButtonColor: "#EF4444",
-            });
+            })
         } finally {
-            setUploading(false);
+            setUploading(false)
         }
-    };
+    }
 
-
-    const [fileUrls, setFileUrls] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error1, setError1] = useState(null);
+    const [fileUrls, setFileUrls] = useState([])
+    const [loading, setLoading] = useState(true)
+    const [error1, setError1] = useState(null)
 
     const fetchFileUrls = async () => {
         try {
-            const data = await fetchInstance(`http://localhost:8082/api/drive/getUrls/${topicid}`, {
+            const data = await fetchInstance(`${baseUrl}/api/drive/getUrls/${topicid}`, {
                 method: "GET",
-            });
-            setFileUrls(data);
+            })
+            setFileUrls(data)
             // eslint-disable-next-line no-unused-vars
         } catch (error1) {
-            setError1("Failed to load file URLs.");
+            setError1("Failed to load file URLs.")
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
     useEffect(() => {
-        fetchFileUrls();
-    }, [topicid]);
+        fetchFileUrls()
+    }, [topicid]) // Removed fetchFileUrls as a dependency
 
     return (
-        <div className="flex-1 p-8 bg-white bg-opacity-60 backdrop-blur-lg shadow-lg rounded-l-2xl bg-gradient-to-br from-blue-100 to-indigo-300">
+        <div className="flex-1 p-4 md:p-8 bg-white bg-opacity-60 backdrop-blur-lg shadow-lg rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-300">
             <div className="mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
                 {/* Subject Title */}
-                <div
-                    className="bg-gradient-to-r from-indigo-700 to-blue-500 p-6 flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-12">
+                <div className="bg-gradient-to-r from-indigo-700 to-blue-500 p-4 md:p-6 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-12">
                     {/* Topic Title */}
-                    <h1 className="text-3xl font-bold text-white tracking-wide text-center sm:text-left flex-1">
-                        {topicData.subjectName} <span className="text-4xl font-extrabold">/</span> {topicData.unitName}
-                        <span className="text-4xl font-extrabold"> / </span> {topicData.topicName}
+                    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide text-center sm:text-left flex-1">
+                        {topicData.subjectName} <span className="text-3xl md:text-4xl font-extrabold">/</span> {topicData.unitName}
+                        <span className="text-3xl md:text-4xl font-extrabold"> / </span> {topicData.topicName}
                     </h1>
 
                     {/* Back Button */}
                     <button
                         onClick={() => window.history.back()}
-                        className="flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-300 text-gray-900 font-semibold rounded-full px-6 py-3 border border-gray-400 shadow-md transition-all duration-300 hover:from-gray-200 hover:to-gray-400 hover:scale-105 active:scale-95"
+                        className="flex items-center gap-2 bg-gradient-to-r from-gray-100 to-gray-300 text-gray-900 font-semibold rounded-full px-4 md:px-6 py-2 md:py-3 border border-gray-400 shadow-md transition-all duration-300 hover:from-gray-200 hover:to-gray-400 hover:scale-105 active:scale-95 w-full sm:w-auto"
                     >
-                        <ArrowLeft size={20} className="text-gray-700"/>
-                        <span className="text-lg">Go Back</span>
+                        <ArrowLeft size={20} className="text-gray-700" />
+                        <span className="text-base md:text-lg">Go Back</span>
                     </button>
                 </div>
 
                 {/* Upload Container */}
-                <div className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 p-6 rounded-lg shadow-md flex flex-col items-center gap-4">
+                <div className="bg-gradient-to-r from-indigo-600/10 to-blue-500/10 p-4 md:p-6 rounded-lg shadow-md flex flex-col items-center gap-4">
                     {/* Drag & Drop Input */}
                     <div
-                        className={`w-full p-5 border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition ${
+                        className={`w-full p-4 md:p-5 border-2 rounded-lg cursor-pointer flex flex-col items-center justify-center transition ${
                             dragActive ? "border-blue-500 bg-blue-100/30" : "border-gray-300 border-dashed"
                         }`}
                         onDragOver={handleDragOver}
@@ -182,9 +180,9 @@ export default function FilesUpload() {
                         <p className="text-gray-500 text-sm">or</p>
                         <label className="cursor-pointer text-blue-600 font-semibold hover:underline">
                             Click to select a file
-                            <input type="file" onChange={(e) => setFile(e.target.files[0])} className="hidden"/>
+                            <input type="file" onChange={(e) => setFile(e.target.files[0])} className="hidden" />
                         </label>
-                        {file && <p className="mt-2 text-sm text-gray-800">{file.name}</p>}
+                        {file && <p className="mt-2 text-sm text-gray-800 break-all text-center">{file.name}</p>}
                     </div>
 
                     {/* Centered Input and Button */}
@@ -203,7 +201,7 @@ export default function FilesUpload() {
                         <button
                             onClick={uploadFile}
                             disabled={uploading}
-                            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-semibold transition duration-200 ${
+                            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-semibold transition duration-200 w-full sm:w-auto ${
                                 uploading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
                             }`}
                         >
@@ -215,10 +213,10 @@ export default function FilesUpload() {
                     {/* Error Message */}
                     {error && <p className="text-red-600 font-medium">{error}</p>}
 
-                    <FileUrlsComp topicId={topicid} fileUrls={fileUrls} loading={loading} error={error1}/>
+                    <FileUrlsComp topicId={topicid} fileUrls={fileUrls} loading={loading} error={error1} />
                 </div>
-
             </div>
         </div>
-    );
+    )
 }
+

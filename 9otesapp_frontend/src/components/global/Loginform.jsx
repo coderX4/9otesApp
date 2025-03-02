@@ -3,14 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext.jsx";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { baseUrl } from "./globalindex.js";
 
 export default function LoginForm() {
-
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-
     const { login } = useAuth();
 
     const handleLogin = async (e) => {
@@ -19,28 +18,27 @@ export default function LoginForm() {
         const loginData = { email, password };
 
         try {
-            const response = await fetch('http://localhost:8082/api/user/login', {
+            const response = await fetch(`${baseUrl}/api/user/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                credentials: 'include', // Ensures session cookie is included
+                credentials: 'include',
                 body: JSON.stringify(loginData),
             });
 
             if (response.ok) {
                 try {
-                    const user = await response.json(); // Get user data
-                    sessionStorage.setItem("user", JSON.stringify(user)); // Store user in sessionStorage
-                } catch (jsonError) {
+                    const user = await response.json();
+                    sessionStorage.setItem("user", JSON.stringify(user));
+                } catch {
                     console.warn("User data not returned as JSON");
                 }
                 login();
-                navigate("/dashboard"); // Redirect after login
+                navigate("/dashboard");
             } else {
                 const errorData = await response.json().catch(() => ({ message: "Login failed!" }));
                 setError(errorData.message || "Login Failed, Please retry!");
             }
-        } catch (error) {
-            console.error("Login error:", error);
+        } catch {
             setError("An error occurred. Please try again later.");
         }
     };
@@ -53,8 +51,7 @@ export default function LoginForm() {
                 uname: decoded.name,
             };
 
-            // Optional: Send to backend for verification
-            const response = await fetch('http://localhost:8082/api/user/google-login', {
+            const response = await fetch(`${baseUrl}/api/user/google-login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -63,25 +60,23 @@ export default function LoginForm() {
 
             if (response.ok) {
                 try {
-                    const user = await response.json(); // Get user data
-                    sessionStorage.setItem("user", JSON.stringify(user)); // Store user in sessionStorage
-                } catch (jsonError) {
+                    const user = await response.json();
+                    sessionStorage.setItem("user", JSON.stringify(user));
+                } catch {
                     console.warn("User data not returned as JSON");
                 }
                 login();
-                navigate("/dashboard"); // Redirect after login
+                navigate("/dashboard");
             } else {
-                console.error("Google login failed on backend.");
                 setError("Google login failed. Please try again.");
             }
-        } catch (error) {
-            console.error("Google login error:", error);
+        } catch {
             setError("An error occurred during Google login.");
         }
     };
 
     return (
-        <div className="mt-11 bg-white p-7 rounded-3xl w-full max-w-md shadow-2xl relative overflow-hidden backdrop-blur-lg">
+        <div className="mt-11 bg-white p-6 md:p-8 rounded-3xl w-full max-w-md mx-auto shadow-2xl relative overflow-hidden backdrop-blur-lg">
             <div className="absolute inset-0 opacity-10">
                 <img
                     src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3"
@@ -90,7 +85,7 @@ export default function LoginForm() {
                 />
             </div>
             <div className="relative z-10">
-                <h1 className="text-3xl font-bold mb-6 text-indigo-800 text-center">Sign in</h1>
+                <h1 className="text-2xl md:text-3xl font-bold mb-6 text-indigo-800 text-center">Sign in</h1>
                 {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
                 <form className="space-y-4" onSubmit={handleLogin}>
                     <div>
@@ -133,24 +128,20 @@ export default function LoginForm() {
                         Forgot your password?
                     </a>
                     <div className="my-4 flex items-center justify-center">
-                        <div className="border-t border-gray-300 flex-grow mr-3" />
+                        <div className="border-t border-gray-300 flex-grow mr-3"/>
                         <span className="text-gray-500 font-medium">or</span>
-                        <div className="border-t border-gray-300 flex-grow ml-3" />
+                        <div className="border-t border-gray-300 flex-grow ml-3"/>
                     </div>
-                    <div className="w-full">
-                        <button
-                            className="w-full flex items-center justify-center gap-2 bg-white border border-gray-300 p-3 rounded-lg shadow-md hover:bg-gray-100 transition-colors"
-                        >
-                            <GoogleLogin
-                                onSuccess={handleGoogleLogin}
-                                onFailure={() => setError("Google login failed.")}
-                                text="signin_with"
-                                theme="outline"
-                                size="medium"
-                                shape="pill"
-                                width="100%"
-                            />
-                        </button>
+                    <div className="w-full flex justify-center">
+                        <GoogleLogin
+                            onSuccess={handleGoogleLogin}
+                            onFailure={() => setError("Google login failed.")}
+                            text="signin_with"
+                            theme="outline"
+                            size="medium"
+                            shape="pill"
+                            width="100%"
+                        />
                     </div>
                 </div>
             </div>

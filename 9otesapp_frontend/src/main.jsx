@@ -32,12 +32,10 @@ const router = createBrowserRouter(
     )
 );
 
-const CLIENT_ID = "188443488642-k7pq7vuv75gek784k312qq92venb1a56.apps.googleusercontent.com"
-
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <AuthProvider>
-            <GoogleOAuthProvider clientId={CLIENT_ID}>
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_CLIENT_ID}>
                 <RouterProvider router={router} />
             </GoogleOAuthProvider>
         </AuthProvider>

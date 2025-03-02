@@ -47,7 +47,7 @@ export default function Home_Register() {
             <section className="py-20 px-6 bg-white bg-opacity-50">
                 <div className="max-w-7xl mx-auto">
                     <h2 className="text-3xl lg:text-4xl font-bold text-indigo-800 mb-12 text-center">Why Choose
-                        9otes?</h2>
+                        NOTESFORGE?</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             {

@@ -1,34 +1,78 @@
-import {useState, useEffect} from 'react'
+import { useState } from "react";
+import { baseUrl } from "../globalindex.js";
+
 export default function RegistrationForm() {
     const [uname, setUName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const user = { uname, email, password };
+        setSuccessMessage("");
+        setErrorMessage("");
 
-        fetch("http://localhost:8082/api/user/adduser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(user),
-        })
-            .then(() => {
-                setUName("");
-                setEmail("");
-                setPassword("");
-                setSuccessMessage("Registration Successfull!");
-                setTimeout(() => setSuccessMessage(""), 3000);
-            })
-            .catch((err) => console.error("Error adding user:", err));
+        // Trim inputs
+        const trimmedUname = uname.trim();
+        const trimmedEmail = email.trim();
+        const trimmedPassword = password.trim();
+
+        if (!trimmedUname || !trimmedEmail || !trimmedPassword) {
+            setErrorMessage("All fields are required!");
+            return;
+        }
+
+        if (!/^\S+@\S+\.\S+$/.test(trimmedEmail)) {
+            setErrorMessage("Invalid email format.");
+            return;
+        }
+
+        if (trimmedPassword.length < 6) {
+            setErrorMessage("Password must be at least 6 characters long.");
+            return;
+        }
+
+        const user = { uname: trimmedUname, email: trimmedEmail, password: trimmedPassword };
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${baseUrl}/api/user/adduser`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(user),
+            });
+
+            if (!response.ok) {
+                throw new Error("Registration failed. Please try again.");
+            }
+
+            setUName("");
+            setEmail("");
+            setPassword("");
+            setSuccessMessage("Registration Successful!");
+            setTimeout(() => setSuccessMessage(""), 3000);
+        } catch (error) {
+            setErrorMessage(error.message || "Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
+
     return (
         <>
             {/* Success Message */}
             {successMessage && (
                 <div className="mb-4 p-3 text-sm text-green-700 bg-green-50 border border-green-300 rounded-lg shadow-md">
                     {successMessage}
+                </div>
+            )}
+
+            {/* Error Message */}
+            {errorMessage && (
+                <div className="mb-4 p-3 text-sm text-red-700 bg-red-50 border border-red-300 rounded-lg shadow-md">
+                    {errorMessage}
                 </div>
             )}
 
@@ -77,11 +121,16 @@ export default function RegistrationForm() {
                 </div>
                 <button
                     type="submit"
-                    className="w-full bg-indigo-600 text-white p-3 rounded-lg hover:bg-indigo-700 transition-colors font-semibold"
+                    disabled={loading}
+                    className={`w-full p-3 rounded-lg font-semibold transition-colors ${
+                        loading
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-indigo-600 text-white hover:bg-indigo-700"
+                    }`}
                 >
-                    Register
+                    {loading ? "Registering..." : "Register"}
                 </button>
             </form>
         </>
-    )
+    );
 }
