@@ -87,6 +87,12 @@ notesforge/
 
 > ![notesforge (1)](https://github.com/user-attachments/assets/fb845269-8682-4f2f-81f6-8c3c89c1afbd)
 
+---
+
+## 🎥 YouTube
+
+Check out our related video content:  
+📺 [Watch on YouTube](https://youtu.be/LkePbqO8l6c)
 
 ---
 
