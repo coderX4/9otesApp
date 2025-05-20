@@ -1,9 +1,9 @@
 package com.notesapp.controller;
 
+import com.notesapp.dto.GoogleLoginRequest;
+import com.notesapp.dto.LoginRequest;
 import com.notesapp.entity.User;
-import com.notesapp.security.GoogleLoginRequest;
-import com.notesapp.security.LoginRequest;
-import com.notesapp.security.UserSession;
+import com.notesapp.dto.UserSession;
 import com.notesapp.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;

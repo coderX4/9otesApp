@@ -1,9 +1,6 @@
 package com.notesapp.controller;
 
-import com.notesapp.entity.FileUrls;
-import com.notesapp.entity.Subject;
-import com.notesapp.entity.Topic;
-import com.notesapp.entity.Unit;
+import com.notesapp.entity.*;
 import com.notesapp.repository.FileUrlsRepo;
 import com.notesapp.repository.TopicRepo;
 import com.notesapp.repository.UnitRepo;

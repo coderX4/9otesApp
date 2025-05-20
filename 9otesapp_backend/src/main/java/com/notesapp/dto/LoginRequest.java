@@ -1,4 +1,4 @@
-package com.notesapp.security;
+package com.notesapp.dto;
 
 
 public class LoginRequest {
