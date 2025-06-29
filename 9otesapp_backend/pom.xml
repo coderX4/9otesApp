@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>9otesapp_backend</name>
     <description>9otesapp_backend</description>
-    <url>https://github.com/coderX4/NotesForge</url>
+    <url>https://github.com/deepghosh146/NotesForge</url>
 
     <licenses>
         <license>
@@ -25,17 +25,17 @@
 
     <developers>
         <developer>
-            <id>coderX4</id>
+            <id>deepghosh146</id>
             <name>Deep_Ghosh</name>
             <email>deepghosh146@gmail.com</email>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/coderX4/NotesForge.git</connection>
-        <developerConnection>scm:git:ssh://github.com:coderX4/NotesForge.git</developerConnection>
+        <connection>scm:git:git://github.com/deepghosh146/NotesForge.git</connection>
+        <developerConnection>scm:git:ssh://github.com:deepghosh146/NotesForge.git</developerConnection>
         <tag>HEAD</tag>
-        <url>https://github.com/coderX4/NotesForge</url>
+        <url>https://github.com/deepghosh146/NotesForge</url>
     </scm>
 
     <properties>
